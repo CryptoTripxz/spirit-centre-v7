@@ -139,8 +139,9 @@ html,body{height:100%;overflow:hidden;background:#07091A;}
 
 /* ── COLLAPSIBLE SECTIONS ── */
 .sp-sec-lbl{cursor:pointer;user-select:none;-webkit-user-select:none;}
-.sp-sec-lbl .sp-chev{margin-left:auto;font-size:10px;color:rgba(200,190,255,0.32);
-  transition:transform 0.28s cubic-bezier(0.34,1.2,0.64,1);flex-shrink:0;}
+.sp-sec-lbl .sp-chev{font-size:9px;color:rgba(200,190,255,0.38);
+  transition:transform 0.28s cubic-bezier(0.34,1.2,0.64,1);flex-shrink:0;
+  display:inline-block;}
 .sp-sec.collapsed .sp-chev{transform:rotate(-90deg);}
 .sp-sec-body{overflow:hidden;
   max-height:1000px;transition:max-height 0.38s cubic-bezier(0.4,0,0.2,1),
@@ -277,6 +278,11 @@ html,body{height:100%;overflow:hidden;background:#07091A;}
   font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 16px var(--sp-glow);}
 .ap-save:active{transform:scale(0.96);}
 
+/* ── ADD VERSE SHEET ── */
+#add-verse-modal{display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,0.60);backdrop-filter:blur(8px);align-items:flex-end;}
+#add-verse-modal.open{display:flex;}
+
 /* ── SHARE/EXPORT SHEET ── */
 #export-sheet{display:none;position:fixed;inset:0;z-index:9998;
   background:rgba(0,0,0,0.60);backdrop-filter:blur(8px);align-items:flex-end;}
@@ -386,8 +392,8 @@ html,body{height:100%;overflow:hidden;background:#07091A;}
   <!-- VERSE OF THE DAY -->
   <div class="sp-verse-card" id="verse-card">
     <div class="sp-card-hdr" onclick="toggleCard('verse-card')">
-      <span class="sp-card-hdr-lbl">✝️ Verse of the Day</span>
-      <span class="sp-card-hdr-chev">▾</span>
+      <span class="sp-card-hdr-chev" style="margin-right:6px;margin-left:0">▾</span>
+      <span class="sp-card-hdr-lbl">Verse of the Day</span>
     </div>
     <div class="sp-card-body">
     <div class="sp-verse-label">Today's Scripture</div>
@@ -403,9 +409,12 @@ html,body{height:100%;overflow:hidden;background:#07091A;}
   </div>
 
   <!-- SCRIPTURE AUDIO -->
+  <div class="sp-sec" id="sec-audio">
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-audio')"><span class="sp-chev">▾</span>Daily Audio Reading<div class="sp-sec-lbl-line"></div></div>
+    <div class="sp-sec-body">
   <div class="sp-audio-card" id="audio-card">
     <div class="sp-card-hdr" onclick="toggleCard('audio-card')">
-      <span class="sp-card-hdr-lbl">🎧 Scripture Audio</span>
+      <span class="sp-card-hdr-lbl">Sacred Audio</span>
       <span class="sp-card-hdr-chev">▾</span>
     </div>
     <div class="sp-card-body">
@@ -455,48 +464,40 @@ html,body{height:100%;overflow:hidden;background:#07091A;}
           <div class="sp-audio-track-sub">Deliverance · Help · Rescue</div>
         </div>
       </div>
+      <div class="sp-audio-track" id="track-4" onclick="audioLoad(4)">
+        <span class="sp-audio-track-ico">▶</span>
+        <div class="sp-audio-track-info">
+          <div class="sp-audio-track-name">Jer 31:3 · Lam 3:22–23</div>
+          <div class="sp-audio-track-sub">Everlasting Love · New Mercies</div>
+        </div>
+      </div>
     </div>
     </div><!-- sp-card-body -->
   </div><!-- sp-audio-card -->
+  </div><!-- sp-sec-body -->
+  </div><!-- sec-audio -->
   <audio id="sp-audio" src="Josh_1_8_1John_3_1_Rom8_1.mp3" preload="metadata"></audio>
 
   <!-- 7-DAY DEVOTION STREAK -->
   <div class="sp-sec" id="sec-streak">
-    <div class="sp-sec-lbl" onclick="toggleSec('sec-streak')">This Week's Devotion <span class="sp-prayer-count" id="streak-badge">5 / 7</span><div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-streak')"><span class="sp-chev">▾</span>This Week's Devotion <span class="sp-prayer-count" id="streak-badge">5 / 7</span><div class="sp-sec-lbl-line"></div></div>
     <div class="sp-sec-body">
     <div class="sp-streak-row" id="sp-streak-row"></div>
     </div>
   </div>
 
-  <!-- PRAYER INTENTIONS -->
+  <!-- PRAYER REQUESTS -->
   <div class="sp-sec" id="sec-prayer">
-    <div class="sp-sec-lbl" onclick="toggleSec('sec-prayer')">Prayer Intentions <span class="sp-prayer-count" id="prayer-count">1 / 4</span><div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-prayer')"><span class="sp-chev">▾</span>Prayer Requests <span class="sp-prayer-count" id="prayer-count">0</span><div class="sp-sec-lbl-line"></div></div>
     <div class="sp-sec-body">
-    <div id="sp-prayer-list">
-      <div class="sp-prayer-item prayed" onclick="togglePrayer(this)">
-        <div class="sp-p-chk"></div>
-        <span class="sp-p-text">Health &amp; protection for my family</span>
-      </div>
-      <div class="sp-prayer-item" onclick="togglePrayer(this)">
-        <div class="sp-p-chk"></div>
-        <span class="sp-p-text">Wisdom in financial decisions</span>
-      </div>
-      <div class="sp-prayer-item" onclick="togglePrayer(this)">
-        <div class="sp-p-chk"></div>
-        <span class="sp-p-text">Peace of mind &amp; clarity of purpose</span>
-      </div>
-      <div class="sp-prayer-item" onclick="togglePrayer(this)">
-        <div class="sp-p-chk"></div>
-        <span class="sp-p-text">Gratitude for daily provision</span>
-      </div>
-    </div>
-    <button class="sp-add-prayer-btn" onclick="openAddPrayer()">+ Add prayer intention</button>
+    <div id="sp-prayer-list"></div>
+    <button class="sp-add-prayer-btn" onclick="openAddPrayer()">+ Add Prayer</button>
     </div>
   </div>
 
   <!-- 30-DAY READING PLAN -->
   <div class="sp-sec" id="sec-reading">
-    <div class="sp-sec-lbl" onclick="toggleSec('sec-reading')">30-Day Scripture Reading Plan<div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-reading')"><span class="sp-chev">▾</span>30-Day Scripture Reading Plan<div class="sp-sec-lbl-line"></div></div>
     <div class="sp-sec-body">
     <div class="rp-card">
       <div class="rp-top">
@@ -512,7 +513,7 @@ html,body{height:100%;overflow:hidden;background:#07091A;}
 
   <!-- DAILY DEVOTIONS -->
   <div class="sp-sec" id="sec-devotions">
-    <div class="sp-sec-lbl" onclick="toggleSec('sec-devotions')">Daily Devotions<div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-devotions')"><span class="sp-chev">▾</span>Daily Devotions<div class="sp-sec-lbl-line"></div></div>
     <div class="sp-sec-body">
     <div class="sp-dev-row" id="sp-dev-row">
       <div class="sp-dev-chip done" onclick="toggleDev(this)">📖 Read Word</div>
@@ -527,14 +528,14 @@ html,body{height:100%;overflow:hidden;background:#07091A;}
   </div>
 
   <!-- GRATITUDE JOURNAL -->
+  <div class="sp-sec" id="sec-journal" style="margin:0 0 0;">
+    <div class="sp-sec-lbl" style="padding:0 14px" onclick="toggleSec('sec-journal')"><span class="sp-chev">▾</span>Gratitude Journal<div class="sp-sec-lbl-line"></div></div>
+    <div class="sp-sec-body">
   <div class="sp-grat-card" id="grat-card">
-    <div class="sp-card-hdr" style="padding:12px 14px 0" onclick="toggleCard('grat-card')">
-      <span class="sp-card-hdr-lbl">🌟 Gratitude Journal</span>
-      <span class="sp-card-hdr-chev">▾</span>
-    </div>
-    <div class="sp-card-body">
+    <div class="sp-card-body" style="max-height:1000px;opacity:1;">
+    <div class="sp-grat-hdr">Today's Reflection</div>
     <textarea class="sp-grat-ta" id="sp-grat-ta"
-      placeholder="What are you thankful for today? Write freely — pour your heart out… ✨"
+      placeholder="What are you grateful for today?…✨"
       oninput="gratCount()"></textarea>
     <div class="sp-grat-footer">
       <span class="sp-grat-count" id="grat-count">0 / 500</span>
@@ -542,10 +543,12 @@ html,body{height:100%;overflow:hidden;background:#07091A;}
     </div>
     </div>
   </div>
+  </div>
+  </div>
 
   <!-- PAST REFLECTIONS -->
   <div class="sp-sec" id="sec-reflections">
-    <div class="sp-sec-lbl" onclick="toggleSec('sec-reflections')">Past Reflections<div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-reflections')"><span class="sp-chev">▾</span>Past Reflections<div class="sp-sec-lbl-line"></div></div>
     <div class="sp-sec-body">
     <div id="sp-grat-entries">
       <div style="font-size:12px;font-style:italic;color:rgba(200,190,255,0.26);padding:6px 0">
@@ -556,10 +559,11 @@ html,body{height:100%;overflow:hidden;background:#07091A;}
   </div>
 
   <!-- FAVOURITE VERSES -->
-  <div class="sp-sec" id="sec-favs" style="display:none">
-    <div class="sp-sec-lbl" onclick="toggleSec('sec-favs')">Favourite Verses<div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+  <div class="sp-sec" id="sec-favs">
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-favs')"><span class="sp-chev">▾</span>Favourite Verses<div class="sp-sec-lbl-line"></div></div>
     <div class="sp-sec-body">
     <div id="fav-list"></div>
+    <button class="sp-add-prayer-btn" onclick="openAddVerse()" id="add-verse-btn">+ Add Verse</button>
     </div>
   </div>
 
@@ -589,12 +593,28 @@ html,body{height:100%;overflow:hidden;background:#07091A;}
 <!-- ADD PRAYER SHEET -->
 <div id="add-prayer-modal" onclick="closeAddPrayer(event)">
   <div class="ap-sheet">
-    <div class="ap-title">🙏 Add Prayer Intention</div>
+    <div class="ap-title">🙏 Add Prayer Request</div>
     <input class="ap-inp" id="ap-inp" placeholder="What do you bring before God today?"
            onkeydown="if(event.key==='Enter')saveAddPrayer()">
     <div class="ap-btns">
       <button class="ap-cancel" onclick="closeAddPrayer()">Cancel</button>
       <button class="ap-save" onclick="saveAddPrayer()">Add ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD VERSE SHEET -->
+<div id="add-verse-modal" onclick="closeAddVerse(event)">
+  <div class="ap-sheet">
+    <div class="ap-title">📖 Add Favourite Verse</div>
+    <input class="ap-inp" id="av-ref-inp" placeholder="Reference  e.g. John 3:16"
+           style="margin-bottom:8px"
+           onkeydown="if(event.key==='Enter')document.getElementById('av-text-inp').focus()">
+    <textarea class="ap-inp" id="av-text-inp" placeholder="Verse text…"
+      style="min-height:80px;resize:none;padding-top:10px;line-height:1.6"></textarea>
+    <div class="ap-btns">
+      <button class="ap-cancel" onclick="closeAddVerse()">Cancel</button>
+      <button class="ap-save" onclick="saveAddVerse()">Save ✦</button>
     </div>
   </div>
 </div>
@@ -696,19 +716,52 @@ function toggleFav(){
   showToast(isFav?'Removed from favourites':'Verse saved to favourites ♥');
 }
 function renderFavs(){
-  var sec=document.getElementById('sec-favs');
-  var list=document.getElementById('fav-list');
-  if(!_favVerses.length){sec.style.display='none';return;}
-  sec.style.display='block';
-  list.innerHTML=_favVerses.map(function(f){
-    return '<div style="background:rgba(123,79,212,0.08);border:1px solid rgba(123,79,212,0.18);border-radius:14px;padding:10px 13px;margin-bottom:6px">'
+  var list = document.getElementById('fav-list');
+  if(!list) return;
+  if(!_favVerses.length){
+    list.innerHTML = '<div style="font-size:12px;font-style:italic;color:rgba(200,190,255,0.26);padding:6px 0 8px">Your favourite verses will appear here…</div>';
+    return;
+  }
+  list.innerHTML = _favVerses.map(function(f,i){
+    return '<div style="background:rgba(123,79,212,0.08);border:1px solid rgba(123,79,212,0.18);border-radius:14px;padding:10px 13px;margin-bottom:6px;position:relative">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
       +'<div style="font-family:DM Mono,monospace;font-size:8px;color:rgba(200,190,255,0.32);margin-bottom:5px">'+f.d+'</div>'
+      +'<button onclick="deleteFav('+i+')" style="background:none;border:none;color:rgba(200,190,255,0.28);font-size:16px;cursor:pointer;padding:0;line-height:1;margin-top:-2px">×</button>'
+      +'</div>'
       +'<div style="font-family:Cinzel,serif;font-size:12px;color:rgba(230,225,255,0.80);line-height:1.7;font-style:italic">'+f.t+'</div>'
       +'<div style="font-family:DM Mono,monospace;font-size:9.5px;color:var(--sp2);margin-top:5px">'+f.r+'</div>'
       +'</div>';
   }).join('');
 }
+function deleteFav(i){
+  _favVerses.splice(i,1);
+  lsSet('sc_favVerses',_favVerses);
+  renderFavs();
+  showToast('Verse removed');
+}
 renderFavs();
+
+/* ═══ ADD VERSE MODAL ═══ */
+function openAddVerse(){
+  document.getElementById('av-ref-inp').value='';
+  document.getElementById('av-text-inp').value='';
+  document.getElementById('add-verse-modal').classList.add('open');
+  setTimeout(function(){document.getElementById('av-ref-inp').focus();},80);
+}
+function closeAddVerse(e){
+  if(!e||e.target===document.getElementById('add-verse-modal'))
+    document.getElementById('add-verse-modal').classList.remove('open');
+}
+function saveAddVerse(){
+  var ref = document.getElementById('av-ref-inp').value.trim();
+  var text = document.getElementById('av-text-inp').value.trim();
+  if(!ref && !text) return;
+  _favVerses.push({t: text || '…', r: ref ? '— '+ref : '', d: fmtDate(new Date()), custom:true});
+  lsSet('sc_favVerses',_favVerses);
+  document.getElementById('add-verse-modal').classList.remove('open');
+  renderFavs();
+  showToast('Verse saved ♥');
+}
 function copyVerse(){
   var text=VERSES[_vi].t+' '+VERSES[_vi].r;
   if(navigator.clipboard)navigator.clipboard.writeText(text);
@@ -750,16 +803,39 @@ function updateStreakBadge(){
 }
 
 /* ═══ PRAYER ═══ */
-function togglePrayer(el){
-  el.classList.toggle('prayed');
+var _prayers = lsGet('sc_prayers') || [];
+function renderPrayers(){
+  var list = document.getElementById('sp-prayer-list');
+  if(!list) return;
+  if(!_prayers.length){
+    list.innerHTML = '<div style="font-size:12px;font-style:italic;color:rgba(200,190,255,0.26);padding:6px 0 8px">Your prayer requests will appear here…</div>';
+  } else {
+    list.innerHTML = _prayers.map(function(p,i){
+      return '<div class="sp-prayer-item'+(p.done?' prayed':'')+'" onclick="togglePrayer('+i+')">'
+        +'<div class="sp-p-chk"></div>'
+        +'<span class="sp-p-text">'+p.text+'</span>'
+        +'<button onclick="event.stopPropagation();deletePrayer('+i+')" style="background:none;border:none;color:rgba(200,190,255,0.28);font-size:14px;cursor:pointer;padding:0 0 0 6px;flex-shrink:0">×</button>'
+        +'</div>';
+    }).join('');
+  }
   updatePrayerCount();
-  showToast(el.classList.contains('prayed')?'Prayer offered ✦':'Prayer unmarked');
+}
+function togglePrayer(i){
+  _prayers[i].done = !_prayers[i].done;
+  lsSet('sc_prayers', _prayers);
+  renderPrayers();
+  showToast(_prayers[i].done ? 'Prayer offered ✦' : 'Prayer unmarked');
+}
+function deletePrayer(i){
+  _prayers.splice(i,1);
+  lsSet('sc_prayers', _prayers);
+  renderPrayers();
+  showToast('Prayer removed');
 }
 function updatePrayerCount(){
-  var all=document.querySelectorAll('.sp-prayer-item');
-  var done=document.querySelectorAll('.sp-prayer-item.prayed').length;
-  var badge=document.getElementById('prayer-count');
-  if(badge)badge.textContent=done+' / '+all.length;
+  var done = _prayers.filter(function(p){return p.done;}).length;
+  var badge = document.getElementById('prayer-count');
+  if(badge) badge.textContent = _prayers.length ? done+' / '+_prayers.length : '0';
 }
 function openAddPrayer(){
   document.getElementById('ap-inp').value='';
@@ -771,19 +847,15 @@ function closeAddPrayer(e){
     document.getElementById('add-prayer-modal').classList.remove('open');
 }
 function saveAddPrayer(){
-  var val=document.getElementById('ap-inp').value.trim();
-  if(!val)return;
-  var list=document.getElementById('sp-prayer-list');
-  var item=document.createElement('div');
-  item.className='sp-prayer-item';
-  item.setAttribute('onclick','togglePrayer(this)');
-  item.innerHTML='<div class="sp-p-chk"></div><span class="sp-p-text">'+val+'</span>';
-  list.appendChild(item);
+  var val = document.getElementById('ap-inp').value.trim();
+  if(!val) return;
+  _prayers.push({text:val, done:false, date:fmtDate(new Date())});
+  lsSet('sc_prayers', _prayers);
   document.getElementById('add-prayer-modal').classList.remove('open');
-  updatePrayerCount();
-  showToast('Prayer intention added 🙏');
+  renderPrayers();
+  showToast('Prayer request added 🙏');
 }
-updatePrayerCount();
+renderPrayers();
 
 /* ═══ DEVOTIONS ═══ */
 function toggleDev(el){
@@ -997,7 +1069,8 @@ function toggleCard(id){
     {src:'Josh_1_8_1John_3_1_Rom8_1.mp3', title:'Today\'s Reading — <span>Josh 1:8 · 1 John 3:1 · Rom 8:1</span>'},
     {src:'Isaiah_41_10.mp3',               title:'Today\'s Reading — <span>Isaiah 41:10</span>'},
     {src:'Psalm_91.mp3',                    title:'Today\'s Reading — <span>Psalm 91</span>'},
-    {src:'Psalm_124.mp3',                   title:'Today\'s Reading — <span>Psalm 124</span>'}
+    {src:'Psalm_124.mp3',                   title:'Today\'s Reading — <span>Psalm 124</span>'},
+    {src:'Jeremiah_31_3_Lamentations_3_22_-_23.mp3', title:'Today\'s Reading — <span>Jer 31:3 · Lam 3:22–23</span>'}
   ];
   var _cur=0;
   var aud=document.getElementById('sp-audio');
