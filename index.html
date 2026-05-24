@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Spirit Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&family=Syne:wght@700;800&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;background:#07091A;}
+:root{
+  --sp:#7B4FD4;--sp2:#A78BFA;--sp-pale:rgba(123,79,212,0.12);--sp-glow:rgba(123,79,212,0.32);
+  --au:#C49820;--au2:#E8B830;--em:#15A854;--em-pale:rgba(21,168,84,0.10);--em-glow:rgba(21,168,84,0.28);
+  --ro:#E8547A;--ro-pale:rgba(232,84,122,0.10);
+  --t1:#1A1E2E;--t2:#3D4460;--t3:#7A82A8;
+  --card:#FFFFFF;--sh:0 2px 16px rgba(0,0,0,0.07);
+}
+
+/* ── APP SHELL ── */
+#app{position:relative;width:100%;max-width:430px;height:100%;margin:0 auto;
+  background:radial-gradient(ellipse at 50% 0%,rgba(100,60,200,0.48) 0%,transparent 58%),
+             radial-gradient(ellipse at 12% 82%,rgba(196,120,32,0.20) 0%,transparent 45%),
+             linear-gradient(165deg,#07091A 0%,#0D1B3E 42%,#13113A 72%,#0A1628 100%);
+  display:flex;flex-direction:column;overflow:hidden;}
+
+/* ── STARS ── */
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle linear infinite;}
+@keyframes twinkle{0%,100%{opacity:0.12;transform:scale(1);}50%{opacity:0.88;transform:scale(1.6);}}
+
+/* ── STATUS BAR ── */
+#sbar{flex-shrink:0;height:44px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;border-bottom:1px solid rgba(255,255,255,0.06);z-index:10;
+  background:rgba(7,9,26,0.92);backdrop-filter:blur(12px);}
+.sbar-time{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:rgba(255,255,255,0.88);}
+.sbar-right{display:flex;align-items:center;gap:8px;}
+.sbar-btn{padding:4px 12px;border-radius:100px;border:1px solid rgba(123,79,212,0.30);
+  background:rgba(123,79,212,0.12);font-size:10px;font-weight:700;color:var(--sp2);
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.sbar-btn:active{transform:scale(0.92);}
+
+/* ── ACTION BAR ── */
+#action-bar{flex-shrink:0;display:flex;align-items:center;gap:5px;padding:5px 12px;
+  background:rgba(7,9,26,0.88);border-bottom:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(8px);}
+.ab-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(255,255,255,0.28);margin-right:auto;}
+.ab-btn{display:flex;align-items:center;gap:3px;padding:4px 11px;border-radius:100px;
+  border:1.5px solid rgba(255,255,255,0.10);background:rgba(255,255,255,0.05);
+  font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:rgba(255,255,255,0.62);
+  cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.ab-btn:active{transform:scale(0.90);}
+.ab-btn:hover{border-color:var(--sp2);color:var(--sp2);}
+
+/* ── MAIN SCROLL ── */
+#main{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;padding-bottom:20px;position:relative;z-index:1;}
+#main::-webkit-scrollbar{display:none;}
+
+/* ── HEADER ── */
+.sp-hdr{padding:18px 16px 8px;display:flex;align-items:flex-start;justify-content:space-between;}
+.sp-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#E8E4FF;line-height:1.1;}
+.sp-sub{font-size:10px;color:rgba(200,190,255,0.42);margin-top:3px;font-weight:500;}
+.candle-btn{padding:7px 14px;border-radius:100px;border:1px solid rgba(123,79,212,0.30);
+  background:rgba(123,79,212,0.12);font-size:11px;font-weight:700;color:var(--sp2);
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);}
+.candle-btn:active{transform:scale(0.92);}
+.candle-btn.lit{background:rgba(255,200,80,0.14);border-color:rgba(255,200,80,0.35);color:rgba(255,220,100,0.88);}
+
+/* ── CANDLE OVERLAY ── */
+#candle-overlay{display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);
+  align-items:center;justify-content:center;flex-direction:column;gap:20px;}
+#candle-overlay.open{display:flex;}
+.candle-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.candle-flame{width:28px;height:50px;position:relative;margin-bottom:-4px;}
+.flame-outer{position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:28px;height:50px;background:radial-gradient(ellipse at 50% 80%,#FF8C00,#FFD700 40%,rgba(255,220,100,0) 80%);
+  border-radius:50% 50% 40% 40%;animation:flicker 1.5s ease-in-out infinite alternate;filter:blur(1px);}
+.flame-inner{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
+  width:14px;height:28px;background:radial-gradient(ellipse at 50% 80%,#fff,#FFE566 40%,rgba(255,200,80,0) 80%);
+  border-radius:50% 50% 35% 35%;animation:flicker 0.9s ease-in-out infinite alternate-reverse;}
+@keyframes flicker{0%{transform:translateX(-50%) scaleX(1);}100%{transform:translateX(-50%) scaleX(0.88) rotate(2deg);}}
+.candle-body{width:20px;height:70px;background:linear-gradient(90deg,#f5f0e8,#fff9f0 40%,#ede5d0);
+  border-radius:3px 3px 2px 2px;box-shadow:0 2px 14px rgba(255,200,80,0.35);}
+.candle-base{width:30px;height:8px;background:linear-gradient(90deg,#d4c8b0,#ede5d0);border-radius:0 0 4px 4px;}
+.candle-glow{position:absolute;width:80px;height:80px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,200,80,0.35),transparent 70%);top:-20px;left:50%;transform:translateX(-50%);}
+.candle-verse{max-width:280px;text-align:center;}
+.candle-verse-text{font-family:'Cinzel',serif;font-size:13px;color:rgba(240,236,255,0.88);
+  line-height:1.8;font-style:italic;}
+.candle-verse-ref{font-family:'DM Mono',monospace;font-size:10px;color:var(--sp2);margin-top:8px;}
+.candle-close{padding:10px 28px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.06);font-family:'DM Sans',sans-serif;font-size:13px;
+  font-weight:700;color:rgba(255,255,255,0.7);cursor:pointer;}
+.candle-close:active{transform:scale(0.95);}
+
+/* ── VERSE CARD ── */
+.sp-verse-card{margin:4px 14px 10px;border-radius:22px;
+  background:linear-gradient(145deg,rgba(255,255,255,0.055),rgba(255,255,255,0.02));
+  border:1px solid rgba(123,79,212,0.30);padding:18px 16px;position:relative;overflow:hidden;}
+.sp-verse-card::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 78% 18%,rgba(123,79,212,0.20),transparent 60%);}
+.sp-verse-ico{font-size:28px;position:relative;z-index:1;display:block;margin-bottom:10px;
+  animation:vGlow 3s ease-in-out infinite;}
+@keyframes vGlow{0%,100%{filter:drop-shadow(0 0 5px rgba(255,220,80,0.5));}
+  50%{filter:drop-shadow(0 0 18px rgba(255,220,80,0.95));}}
+.sp-verse-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(200,190,255,0.42);position:relative;z-index:1;margin-bottom:8px;}
+.sp-verse-text{font-family:'Cinzel',serif;font-size:14px;color:rgba(240,236,255,0.92);
+  line-height:1.80;position:relative;z-index:1;font-style:italic;}
+.sp-verse-ref{font-family:'DM Mono',monospace;font-size:10px;color:var(--sp2);
+  margin-top:10px;position:relative;z-index:1;}
+.sp-verse-btns{margin-top:11px;position:relative;z-index:1;display:flex;gap:7px;flex-wrap:wrap;}
+.sp-vbtn{padding:6px 14px;border-radius:100px;border:1px solid rgba(123,79,212,0.30);
+  background:rgba(123,79,212,0.12);font-size:10px;font-weight:700;color:var(--sp2);
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.sp-vbtn:active{transform:scale(0.90);}
+.sp-vbtn-gold{border-color:rgba(255,220,80,0.28);background:rgba(255,220,80,0.09);
+  color:rgba(255,220,120,0.84);}
+.sp-vbtn-fav{border-color:rgba(232,84,122,0.30);background:rgba(232,84,122,0.10);color:#FF7A9A;}
+.sp-vbtn-fav.active{background:rgba(232,84,122,0.25);}
+
+/* ── 7-DAY STREAK ── */
+.sp-streak-row{display:flex;gap:5px;justify-content:center;margin:0 14px 10px;}
+.sp-streak-day{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+.sp-sd-circle{width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(123,79,212,0.22);
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  background:rgba(255,255,255,0.03);transition:all 0.3s;}
+.sp-sd-circle.lit{background:linear-gradient(135deg,rgba(123,79,212,0.38),rgba(100,60,200,0.55));
+  border-color:rgba(123,79,212,0.55);box-shadow:0 0 12px rgba(123,79,212,0.45);}
+.sp-sd-lbl{font-family:'DM Mono',monospace;font-size:7px;color:rgba(200,190,255,0.32);}
+
+/* ── SECTIONS ── */
+.sp-sec{margin:0 14px 10px;position:relative;z-index:1;}
+.sp-sec-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(200,190,255,0.38);margin-bottom:7px;display:flex;align-items:center;gap:8px;}
+.sp-sec-lbl-line{flex:1;height:1px;background:rgba(255,255,255,0.06);}
+
+/* ── COLLAPSIBLE SECTIONS ── */
+.sp-sec-lbl{cursor:pointer;user-select:none;-webkit-user-select:none;}
+.sp-sec-lbl .sp-chev{margin-left:auto;font-size:10px;color:rgba(200,190,255,0.32);
+  transition:transform 0.28s cubic-bezier(0.34,1.2,0.64,1);flex-shrink:0;}
+.sp-sec.collapsed .sp-chev{transform:rotate(-90deg);}
+.sp-sec-body{overflow:hidden;
+  max-height:1000px;transition:max-height 0.38s cubic-bezier(0.4,0,0.2,1),
+  opacity 0.28s ease,transform 0.28s ease;
+  opacity:1;transform:translateY(0);}
+.sp-sec.collapsed .sp-sec-body{max-height:0!important;opacity:0;transform:translateY(-4px);}
+
+/* collapsible card wrapper (verse, audio, gratitude) */
+.sp-card-hdr{display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;user-select:none;-webkit-user-select:none;margin-bottom:10px;
+  position:relative;z-index:1;}
+.sp-card-hdr-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(200,190,255,0.42);}
+.sp-card-hdr-chev{font-size:10px;color:rgba(200,190,255,0.32);
+  transition:transform 0.28s cubic-bezier(0.34,1.2,0.64,1);}
+.sp-card-collapsed .sp-card-hdr-chev{transform:rotate(-90deg);}
+.sp-card-body{overflow:hidden;
+  max-height:1000px;transition:max-height 0.38s cubic-bezier(0.4,0,0.2,1),
+  opacity 0.28s ease,transform 0.28s ease;
+  opacity:1;transform:translateY(0);}
+.sp-card-collapsed .sp-card-body{max-height:0!important;opacity:0;transform:translateY(-4px);}
+
+/* ── PRAYER LIST ── */
+.sp-prayer-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:15px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(123,79,212,0.16);
+  cursor:pointer;transition:all 0.22s;-webkit-tap-highlight-color:transparent;margin-bottom:6px;}
+.sp-prayer-item.prayed{background:rgba(123,79,212,0.13);border-color:rgba(123,79,212,0.32);}
+.sp-p-chk{width:22px;height:22px;border-radius:7px;border:2px solid rgba(123,79,212,0.42);
+  display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;
+  transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);color:#fff;}
+.sp-prayer-item.prayed .sp-p-chk{background:var(--sp);border-color:var(--sp);}
+.sp-prayer-item.prayed .sp-p-chk::after{content:'✓';}
+.sp-p-text{font-size:12.5px;font-weight:600;color:rgba(230,225,255,0.82);flex:1;line-height:1.3;}
+.sp-prayer-item.prayed .sp-p-text{color:rgba(160,150,200,0.55);text-decoration:line-through;}
+.sp-prayer-count{font-family:'DM Mono',monospace;font-size:9px;
+  background:rgba(123,79,212,0.16);border:1px solid rgba(123,79,212,0.28);
+  border-radius:100px;padding:2px 8px;color:var(--sp2);}
+.sp-add-prayer-btn{width:100%;padding:10px;border:1.5px dashed rgba(123,79,212,0.22);
+  border-radius:14px;background:none;font-family:'DM Sans',sans-serif;font-size:12px;
+  color:rgba(200,190,255,0.38);cursor:pointer;margin-top:5px;transition:all 0.2s;}
+.sp-add-prayer-btn:hover{border-color:var(--sp2);color:var(--sp2);}
+
+/* ── DEVOTION CHIPS ── */
+.sp-dev-row{display:flex;gap:6px;flex-wrap:wrap;}
+.sp-dev-chip{padding:7px 13px;border-radius:100px;background:rgba(255,255,255,0.04);
+  border:1.5px solid rgba(123,79,212,0.16);font-size:11px;font-weight:600;
+  color:rgba(200,190,255,0.50);cursor:pointer;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);}
+.sp-dev-chip.done{background:rgba(123,79,212,0.18);border-color:rgba(123,79,212,0.40);color:var(--sp2);}
+.sp-dev-chip:active{transform:scale(0.90);}
+.sp-dev-chip.done::before{content:'✓ ';}
+
+/* ── READING PLAN ── */
+.rp-card{background:rgba(255,255,255,0.04);border:1px solid rgba(123,79,212,0.20);
+  border-radius:18px;padding:14px;}
+.rp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.rp-today{font-size:12.5px;font-weight:700;color:rgba(230,225,255,0.82);}
+.rp-pct{font-family:'DM Mono',monospace;font-size:9px;color:rgba(200,190,255,0.38);}
+.rp-bar-track{height:5px;background:rgba(255,255,255,0.08);border-radius:3px;
+  overflow:hidden;margin-bottom:11px;}
+.rp-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--sp),var(--sp2));
+  transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+.rp-dots{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:11px;}
+.rp-dot{width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(123,79,212,0.22);
+  display:flex;align-items:center;justify-content:center;font-size:8.5px;
+  font-family:'DM Mono',monospace;font-weight:700;color:rgba(200,190,255,0.38);
+  cursor:pointer;background:rgba(255,255,255,0.03);transition:all 0.2s;}
+.rp-dot.done{background:var(--sp);border-color:var(--sp);color:#fff;font-size:10px;}
+.rp-dot.today{border-color:var(--sp2);background:rgba(123,79,212,0.24);color:var(--sp2);}
+.rp-dot:active{transform:scale(0.85);}
+.rp-mark-btn{width:100%;padding:10px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--sp),var(--sp2));color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 16px var(--sp-glow);transition:transform 0.15s,box-shadow 0.15s;}
+.rp-mark-btn:active{transform:scale(0.96);}
+
+/* ── GRATITUDE JOURNAL ── */
+.sp-grat-card{margin:0 14px 10px;border-radius:20px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(123,79,212,0.18);overflow:hidden;}
+.sp-grat-hdr{padding:12px 14px 0;font-size:13px;font-weight:700;color:rgba(230,225,255,0.80);}
+.sp-grat-ta{width:100%;padding:10px 14px;border:none;outline:none;resize:none;
+  font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(230,225,255,0.75);
+  background:transparent;min-height:88px;line-height:1.65;}
+.sp-grat-ta::placeholder{color:rgba(200,190,255,0.22);font-style:italic;}
+.sp-grat-footer{display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px 12px;border-top:1px solid rgba(123,79,212,0.10);}
+.sp-grat-count{font-family:'DM Mono',monospace;font-size:9.5px;color:rgba(200,190,255,0.30);}
+.sp-grat-save{padding:8px 18px;border:none;border-radius:11px;
+  background:linear-gradient(135deg,var(--sp),var(--sp2));color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
+  box-shadow:0 3px 14px var(--sp-glow);}
+.sp-grat-save:active{transform:scale(0.95);}
+
+/* ── PAST REFLECTIONS ── */
+.sp-grat-entry{padding:10px 13px;border-radius:14px;
+  background:rgba(123,79,212,0.07);border:1px solid rgba(123,79,212,0.14);margin-bottom:6px;}
+.sp-grat-entry-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.sp-grat-entry-date{font-family:'DM Mono',monospace;font-size:8.5px;color:rgba(200,190,255,0.32);}
+.sp-grat-entry-del{font-size:12px;cursor:pointer;opacity:0.22;transition:opacity 0.2s;background:none;border:none;color:rgba(200,190,255,0.7);}
+.sp-grat-entry-del:hover{opacity:0.65;}
+.sp-grat-entry-text{font-size:12px;color:rgba(220,215,255,0.72);line-height:1.6;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px)+24px);left:50%;
+  transform:translateX(-50%) translateY(100px) scale(0.94);
+  background:rgba(20,14,50,0.97);border:1px solid rgba(123,79,212,0.28);
+  border-radius:100px;padding:11px 22px;font-family:'DM Sans',sans-serif;font-size:12.5px;
+  color:rgba(240,235,255,0.94);white-space:nowrap;
+  box-shadow:0 8px 40px rgba(0,0,0,0.55),0 0 0 1px rgba(123,79,212,0.12);
+  z-index:99999;transition:transform 0.40s cubic-bezier(0.34,1.56,0.64,1),opacity 0.38s ease;
+  pointer-events:none;opacity:0;}
+#toast.show{transform:translateX(-50%) translateY(0) scale(1);opacity:1;pointer-events:auto;cursor:pointer;}
+
+/* ── ADD PRAYER SHEET ── */
+#add-prayer-modal{display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,0.60);backdrop-filter:blur(8px);align-items:flex-end;}
+#add-prayer-modal.open{display:flex;}
+.ap-sheet{background:linear-gradient(180deg,#1A1040,#120D30);
+  border:1px solid rgba(123,79,212,0.28);border-radius:26px 26px 0 0;
+  padding:20px 18px calc(env(safe-area-inset-bottom,20px)+20px);
+  width:100%;max-width:430px;margin:0 auto;box-shadow:0 -14px 50px rgba(0,0,0,0.5);}
+.ap-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;
+  color:rgba(230,225,255,0.90);margin-bottom:13px;}
+.ap-inp{width:100%;padding:12px 14px;border:1.5px solid rgba(123,79,212,0.28);border-radius:14px;
+  background:rgba(123,79,212,0.08);color:rgba(230,225,255,0.88);
+  font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+.ap-inp:focus{border-color:var(--sp2);box-shadow:0 0 0 3px var(--sp-pale);}
+.ap-inp::placeholder{color:rgba(200,190,255,0.28);}
+.ap-btns{display:flex;gap:8px;margin-top:12px;}
+.ap-cancel{flex:1;padding:12px;border:1.5px solid rgba(255,255,255,0.10);border-radius:13px;
+  background:rgba(255,255,255,0.05);font-family:'DM Sans',sans-serif;font-size:13px;
+  font-weight:600;color:rgba(200,190,255,0.55);cursor:pointer;}
+.ap-save{flex:2;padding:12px;border:none;border-radius:13px;
+  background:linear-gradient(135deg,var(--sp),var(--sp2));font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 16px var(--sp-glow);}
+.ap-save:active{transform:scale(0.96);}
+
+/* ── SHARE/EXPORT SHEET ── */
+#export-sheet{display:none;position:fixed;inset:0;z-index:9998;
+  background:rgba(0,0,0,0.60);backdrop-filter:blur(8px);align-items:flex-end;}
+#export-sheet.open{display:flex;}
+.es-body{background:linear-gradient(180deg,#1A1040,#120D30);
+  border:1px solid rgba(123,79,212,0.28);border-radius:26px 26px 0 0;
+  padding:20px 18px calc(env(safe-area-inset-bottom,20px)+20px);
+  width:100%;max-width:430px;margin:0 auto;box-shadow:0 -14px 50px rgba(0,0,0,0.5);}
+.es-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;
+  color:rgba(230,225,255,0.90);margin-bottom:14px;}
+.es-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.es-btn{padding:14px 10px;border-radius:16px;border:1.5px solid rgba(123,79,212,0.24);
+  background:rgba(123,79,212,0.09);font-family:'DM Sans',sans-serif;font-size:12px;
+  font-weight:700;color:var(--sp2);cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:6px;transition:all 0.2s;}
+.es-btn:active{transform:scale(0.94);}
+.es-btn:hover{background:rgba(123,79,212,0.18);border-color:var(--sp2);}
+.es-btn-ico{font-size:22px;}
+.es-cancel{width:100%;margin-top:10px;padding:12px;border:1.5px solid rgba(255,255,255,0.08);
+  border-radius:13px;background:rgba(255,255,255,0.04);font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:600;color:rgba(200,190,255,0.45);cursor:pointer;}
+
+/* ── AUDIO PLAYER ── */
+.sp-audio-card{margin:4px 14px 10px;border-radius:22px;
+  background:linear-gradient(145deg,rgba(255,255,255,0.055),rgba(255,255,255,0.02));
+  border:1px solid rgba(196,152,32,0.35);padding:16px 16px 14px;position:relative;overflow:hidden;}
+.sp-audio-card::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 20%,rgba(196,152,32,0.15),transparent 60%);}
+.sp-audio-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(200,190,255,0.42);position:relative;z-index:1;margin-bottom:6px;}
+.sp-audio-title{font-family:'Cinzel',serif;font-size:13px;color:rgba(240,236,255,0.90);
+  line-height:1.5;position:relative;z-index:1;margin-bottom:12px;}
+.sp-audio-title span{color:var(--au2);font-style:italic;}
+.sp-audio-controls{display:flex;align-items:center;gap:10px;position:relative;z-index:1;}
+.sp-audio-play{width:40px;height:40px;border-radius:50%;border:none;flex-shrink:0;
+  background:linear-gradient(135deg,var(--au),var(--au2));
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 4px 16px rgba(196,152,32,0.40);transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);}
+.sp-audio-play:active{transform:scale(0.90);}
+.sp-audio-play svg{width:16px;height:16px;fill:#fff;margin-left:2px;}
+.sp-audio-play.playing svg{margin-left:0;}
+.sp-audio-right{flex:1;display:flex;flex-direction:column;gap:6px;}
+.sp-audio-seek{width:100%;-webkit-appearance:none;appearance:none;height:4px;
+  border-radius:2px;background:rgba(255,255,255,0.10);outline:none;cursor:pointer;}
+.sp-audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
+  border-radius:50%;background:var(--au2);cursor:pointer;
+  box-shadow:0 0 6px rgba(196,152,32,0.55);}
+.sp-audio-seek::-moz-range-thumb{width:14px;height:14px;border:none;border-radius:50%;
+  background:var(--au2);cursor:pointer;}
+.sp-audio-time-row{display:flex;justify-content:space-between;}
+.sp-audio-time{font-family:'DM Mono',monospace;font-size:9px;color:rgba(200,190,255,0.38);}
+.sp-audio-refs{margin-top:10px;position:relative;z-index:1;display:flex;gap:6px;flex-wrap:wrap;}
+.sp-audio-ref-chip{padding:3px 10px;border-radius:100px;background:rgba(196,152,32,0.10);
+  border:1px solid rgba(196,152,32,0.25);font-family:'DM Mono',monospace;
+  font-size:9px;color:rgba(232,184,48,0.80);}
+
+/* ── AUDIO PLAYLIST ── */
+.sp-audio-playlist{margin-top:12px;display:flex;flex-direction:column;gap:5px;position:relative;z-index:1;}
+.sp-audio-track{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:13px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(196,152,32,0.14);
+  cursor:pointer;transition:all 0.2s;}
+.sp-audio-track:active{transform:scale(0.97);}
+.sp-audio-track.active{background:rgba(196,152,32,0.12);border-color:rgba(196,152,32,0.35);}
+.sp-audio-track-ico{font-size:9px;color:rgba(200,190,255,0.28);flex-shrink:0;width:12px;
+  transition:color 0.2s;}
+.sp-audio-track.active .sp-audio-track-ico{color:var(--au2);}
+.sp-audio-track-info{flex:1;}
+.sp-audio-track-name{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;
+  color:rgba(220,215,255,0.72);transition:color 0.2s;}
+.sp-audio-track.active .sp-audio-track-name{color:rgba(240,236,255,0.92);}
+.sp-audio-track-sub{font-family:'DM Mono',monospace;font-size:8.5px;
+  color:rgba(200,190,255,0.32);margin-top:2px;}
+</style>
+</head>
+<body>
+<!-- STAR FIELD -->
+<div id="stars"></div>
+
+<div id="app">
+<!-- STATUS BAR -->
+<div id="sbar">
+  <span class="sbar-time" id="sbar-time">9:41</span>
+  <div class="sbar-right">
+    <button class="sbar-btn" id="candle-trigger" onclick="openCandle()">🕯 Light Candle</button>
+  </div>
+</div>
+
+<!-- ACTION BAR -->
+<div id="action-bar">
+  <span class="ab-lbl">SPIRIT CENTRE</span>
+  <button class="ab-btn" onclick="openExportSheet()">↑ Share</button>
+  <button class="ab-btn" onclick="doSave()">💾 Save</button>
+  <button class="ab-btn" onclick="doPDF()">📄 PDF</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+
+  <!-- HEADER -->
+  <div class="sp-hdr">
+    <div>
+      <div class="sp-title">Spirit<br>Centre</div>
+      <div class="sp-sub">Faith · Prayer · Gratitude · Devotion</div>
+    </div>
+  </div>
+
+  <!-- VERSE OF THE DAY -->
+  <div class="sp-verse-card" id="verse-card">
+    <div class="sp-card-hdr" onclick="toggleCard('verse-card')">
+      <span class="sp-card-hdr-lbl">✝️ Verse of the Day</span>
+      <span class="sp-card-hdr-chev">▾</span>
+    </div>
+    <div class="sp-card-body">
+    <div class="sp-verse-label">Today's Scripture</div>
+    <div class="sp-verse-text" id="sp-verse-text">"I can do all things through Christ which strengtheneth me."</div>
+    <div class="sp-verse-ref" id="sp-verse-ref">— Philippians 4:13</div>
+    <div class="sp-verse-btns">
+      <button class="sp-vbtn" onclick="nextVerse()">Next Verse ›</button>
+      <button class="sp-vbtn" onclick="prevVerse()">‹ Prev</button>
+      <button class="sp-vbtn sp-vbtn-gold" onclick="shareVerse()">Share ↑</button>
+      <button class="sp-vbtn sp-vbtn-fav" id="fav-btn" onclick="toggleFav()">♡ Favourite</button>
+    </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTURE AUDIO -->
+  <div class="sp-audio-card" id="audio-card">
+    <div class="sp-card-hdr" onclick="toggleCard('audio-card')">
+      <span class="sp-card-hdr-lbl">🎧 Scripture Audio</span>
+      <span class="sp-card-hdr-chev">▾</span>
+    </div>
+    <div class="sp-card-body">
+    <!-- Now-playing title -->
+    <div class="sp-audio-title" id="audio-now-title">Today's Reading — <span>Josh 1:8 · 1 John 3:1 · Rom 8:1</span></div>
+    <!-- Controls -->
+    <div class="sp-audio-controls">
+      <button class="sp-audio-play" id="audio-play-btn" onclick="audioToggle()">
+        <svg id="audio-play-icon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+      </button>
+      <div class="sp-audio-right">
+        <input class="sp-audio-seek" id="audio-seek" type="range" min="0" max="100" value="0"
+          oninput="audioSeek(this.value)">
+        <div class="sp-audio-time-row">
+          <span class="sp-audio-time" id="audio-cur">0:00</span>
+          <span class="sp-audio-time" id="audio-dur">--:--</span>
+        </div>
+      </div>
+    </div>
+    <!-- Playlist -->
+    <div class="sp-audio-playlist" id="sp-audio-playlist">
+      <div class="sp-audio-track active" id="track-0" onclick="audioLoad(0)">
+        <span class="sp-audio-track-ico">▶</span>
+        <div class="sp-audio-track-info">
+          <div class="sp-audio-track-name">Josh 1:8 · 1 John 3:1 · Rom 8:1</div>
+          <div class="sp-audio-track-sub">Faith · Identity · Freedom</div>
+        </div>
+      </div>
+      <div class="sp-audio-track" id="track-1" onclick="audioLoad(1)">
+        <span class="sp-audio-track-ico">▶</span>
+        <div class="sp-audio-track-info">
+          <div class="sp-audio-track-name">Isaiah 41:10</div>
+          <div class="sp-audio-track-sub">Fear Not · Strength &amp; Help</div>
+        </div>
+      </div>
+      <div class="sp-audio-track" id="track-2" onclick="audioLoad(2)">
+        <span class="sp-audio-track-ico">▶</span>
+        <div class="sp-audio-track-info">
+          <div class="sp-audio-track-name">Psalm 91</div>
+          <div class="sp-audio-track-sub">Refuge · Protection · Dwelling</div>
+        </div>
+      </div>
+      <div class="sp-audio-track" id="track-3" onclick="audioLoad(3)">
+        <span class="sp-audio-track-ico">▶</span>
+        <div class="sp-audio-track-info">
+          <div class="sp-audio-track-name">Psalm 124</div>
+          <div class="sp-audio-track-sub">Deliverance · Help · Rescue</div>
+        </div>
+      </div>
+    </div>
+    </div><!-- sp-card-body -->
+  </div><!-- sp-audio-card -->
+  <audio id="sp-audio" src="Josh_1_8_1John_3_1_Rom8_1.mp3" preload="metadata"></audio>
+
+  <!-- 7-DAY DEVOTION STREAK -->
+  <div class="sp-sec" id="sec-streak">
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-streak')">This Week's Devotion <span class="sp-prayer-count" id="streak-badge">5 / 7</span><div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+    <div class="sp-sec-body">
+    <div class="sp-streak-row" id="sp-streak-row"></div>
+    </div>
+  </div>
+
+  <!-- PRAYER INTENTIONS -->
+  <div class="sp-sec" id="sec-prayer">
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-prayer')">Prayer Intentions <span class="sp-prayer-count" id="prayer-count">1 / 4</span><div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+    <div class="sp-sec-body">
+    <div id="sp-prayer-list">
+      <div class="sp-prayer-item prayed" onclick="togglePrayer(this)">
+        <div class="sp-p-chk"></div>
+        <span class="sp-p-text">Health &amp; protection for my family</span>
+      </div>
+      <div class="sp-prayer-item" onclick="togglePrayer(this)">
+        <div class="sp-p-chk"></div>
+        <span class="sp-p-text">Wisdom in financial decisions</span>
+      </div>
+      <div class="sp-prayer-item" onclick="togglePrayer(this)">
+        <div class="sp-p-chk"></div>
+        <span class="sp-p-text">Peace of mind &amp; clarity of purpose</span>
+      </div>
+      <div class="sp-prayer-item" onclick="togglePrayer(this)">
+        <div class="sp-p-chk"></div>
+        <span class="sp-p-text">Gratitude for daily provision</span>
+      </div>
+    </div>
+    <button class="sp-add-prayer-btn" onclick="openAddPrayer()">+ Add prayer intention</button>
+    </div>
+  </div>
+
+  <!-- 30-DAY READING PLAN -->
+  <div class="sp-sec" id="sec-reading">
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-reading')">30-Day Scripture Reading Plan<div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+    <div class="sp-sec-body">
+    <div class="rp-card">
+      <div class="rp-top">
+        <span class="rp-today" id="rp-today-ref">Day 1 · Genesis 1-2</span>
+        <span class="rp-pct" id="rp-pct">0% complete</span>
+      </div>
+      <div class="rp-bar-track"><div class="rp-bar-fill" id="rp-bar" style="width:0%"></div></div>
+      <div class="rp-dots" id="rp-days"></div>
+      <button class="rp-mark-btn" onclick="markReadingDay()">Mark Today Read ✝</button>
+    </div>
+    </div>
+  </div>
+
+  <!-- DAILY DEVOTIONS -->
+  <div class="sp-sec" id="sec-devotions">
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-devotions')">Daily Devotions<div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+    <div class="sp-sec-body">
+    <div class="sp-dev-row" id="sp-dev-row">
+      <div class="sp-dev-chip done" onclick="toggleDev(this)">📖 Read Word</div>
+      <div class="sp-dev-chip" onclick="toggleDev(this)">🙏 Morning Prayer</div>
+      <div class="sp-dev-chip done" onclick="toggleDev(this)">🕊 Meditation</div>
+      <div class="sp-dev-chip" onclick="toggleDev(this)">📿 Evening Prayer</div>
+      <div class="sp-dev-chip" onclick="toggleDev(this)">💌 Worship</div>
+      <div class="sp-dev-chip" onclick="toggleDev(this)">📝 Scripture Study</div>
+      <div class="sp-dev-chip" onclick="toggleDev(this)">🤲 Intercession</div>
+    </div>
+    </div>
+  </div>
+
+  <!-- GRATITUDE JOURNAL -->
+  <div class="sp-grat-card" id="grat-card">
+    <div class="sp-card-hdr" style="padding:12px 14px 0" onclick="toggleCard('grat-card')">
+      <span class="sp-card-hdr-lbl">🌟 Gratitude Journal</span>
+      <span class="sp-card-hdr-chev">▾</span>
+    </div>
+    <div class="sp-card-body">
+    <textarea class="sp-grat-ta" id="sp-grat-ta"
+      placeholder="What are you thankful for today? Write freely — pour your heart out… ✨"
+      oninput="gratCount()"></textarea>
+    <div class="sp-grat-footer">
+      <span class="sp-grat-count" id="grat-count">0 / 500</span>
+      <button class="sp-grat-save" onclick="spGratSave()">Save &amp; Reflect ✦</button>
+    </div>
+    </div>
+  </div>
+
+  <!-- PAST REFLECTIONS -->
+  <div class="sp-sec" id="sec-reflections">
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-reflections')">Past Reflections<div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+    <div class="sp-sec-body">
+    <div id="sp-grat-entries">
+      <div style="font-size:12px;font-style:italic;color:rgba(200,190,255,0.26);padding:6px 0">
+        Your reflections will appear here…
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- FAVOURITE VERSES -->
+  <div class="sp-sec" id="sec-favs" style="display:none">
+    <div class="sp-sec-lbl" onclick="toggleSec('sec-favs')">Favourite Verses<div class="sp-sec-lbl-line"></div><span class="sp-chev">▾</span></div>
+    <div class="sp-sec-body">
+    <div id="fav-list"></div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- CANDLE OVERLAY -->
+<div id="candle-overlay" onclick="closeCandle(event)">
+  <div class="candle-wrap" style="position:relative">
+    <div class="candle-glow"></div>
+    <div class="candle-flame"><div class="flame-outer"></div><div class="flame-inner"></div></div>
+    <div class="candle-body"></div>
+    <div class="candle-base"></div>
+  </div>
+  <div class="candle-verse">
+    <div class="candle-verse-text" id="candle-verse-text">
+      "The LORD is my light and my salvation — whom shall I fear?"
+    </div>
+    <div class="candle-verse-ref">— Psalm 27:1</div>
+  </div>
+  <div style="text-align:center;font-size:11px;color:rgba(200,190,255,0.38);margin-top:-8px">
+    You are not alone in this moment ✝
+  </div>
+  <button class="candle-close" onclick="closeCandle()">Close</button>
+</div>
+
+<!-- ADD PRAYER SHEET -->
+<div id="add-prayer-modal" onclick="closeAddPrayer(event)">
+  <div class="ap-sheet">
+    <div class="ap-title">🙏 Add Prayer Intention</div>
+    <input class="ap-inp" id="ap-inp" placeholder="What do you bring before God today?"
+           onkeydown="if(event.key==='Enter')saveAddPrayer()">
+    <div class="ap-btns">
+      <button class="ap-cancel" onclick="closeAddPrayer()">Cancel</button>
+      <button class="ap-save" onclick="saveAddPrayer()">Add ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT SHEET -->
+<div id="export-sheet" onclick="closeExportSheet(event)">
+  <div class="es-body">
+    <div class="es-title">Share or Export Spirit Centre</div>
+    <div class="es-btn-grid">
+      <button class="es-btn" onclick="doShare();closeExportSheet()">
+        <span class="es-btn-ico">↑</span>Share
+      </button>
+      <button class="es-btn" onclick="doSave();closeExportSheet()">
+        <span class="es-btn-ico">💾</span>Save .txt
+      </button>
+      <button class="es-btn" onclick="doPDF();closeExportSheet()">
+        <span class="es-btn-ico">📄</span>Export PDF
+      </button>
+      <button class="es-btn" onclick="copyVerse();closeExportSheet()">
+        <span class="es-btn-ico">📋</span>Copy Verse
+      </button>
+    </div>
+    <button class="es-cancel" onclick="closeExportSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" onclick="dismissToast()"></div>
+
+<script>
+/* ═══ HELPERS ═══ */
+function lsGet(k){try{var r=localStorage.getItem(k);return r?JSON.parse(r):null;}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+var DAY=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtDate(d){return DAY[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()];}
+function fmtTime(d){var h=d.getHours(),m=d.getMinutes();return (h%12||12)+':'+(m<10?'0':'')+m+(h<12?' AM':' PM');}
+
+/* ═══ CLOCK ═══ */
+function tick(){var d=new Date(),h=d.getHours(),m=d.getMinutes();
+  document.getElementById('sbar-time').textContent=(h%12||12)+':'+(m<10?'0':'')+m+(h<12?' AM':' PM');}
+tick();setInterval(tick,30000);
+
+/* ═══ STARS ═══ */
+(function(){
+  var c=document.getElementById('stars');
+  for(var i=0;i<70;i++){
+    var s=document.createElement('div');s.className='star';
+    var sz=Math.random()*2.8+0.4;
+    s.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100
+      +'%;animation-duration:'+(Math.random()*5+2)+'s;animation-delay:'+Math.random()*7+'s;';
+    c.appendChild(s);
+  }
+})();
+
+/* ═══ VERSES ═══ */
+var VERSES=[
+  {t:'"I can do all things through Christ which strengtheneth me."',r:'— Philippians 4:13'},
+  {t:'"The LORD is my shepherd; I shall not want."',r:'— Psalm 23:1'},
+  {t:'"Trust in the LORD with all your heart, and lean not on your own understanding."',r:'— Proverbs 3:5'},
+  {t:'"Be still, and know that I am God."',r:'— Psalm 46:10'},
+  {t:'"For I know the plans I have for you, declares the LORD, plans to prosper you and not to harm you."',r:'— Jeremiah 29:11'},
+  {t:'"The joy of the LORD is your strength."',r:'— Nehemiah 8:10'},
+  {t:'"Ask and it will be given to you; seek and you will find; knock and the door will be opened."',r:'— Matthew 7:7'},
+  {t:'"Cast all your anxiety on him because he cares for you."',r:'— 1 Peter 5:7'},
+  {t:'"Come to me, all you who are weary and burdened, and I will give you rest."',r:'— Matthew 11:28'},
+  {t:'"The LORD is my light and my salvation — whom shall I fear?"',r:'— Psalm 27:1'},
+  {t:'"And we know that in all things God works for the good of those who love him."',r:'— Romans 8:28'},
+  {t:'"Even though I walk through the darkest valley, I will fear no evil, for you are with me."',r:'— Psalm 23:4'},
+  {t:'"Do not be anxious about anything, but in every situation present your requests to God."',r:'— Philippians 4:6'},
+  {t:'"For God so loved the world that he gave his one and only Son."',r:'— John 3:16'},
+  {t:'"I am the way and the truth and the life."',r:'— John 14:6'},
+  {t:'"Your word is a lamp for my feet, a light on my path."',r:'— Psalm 119:105'}
+];
+var _vi=0,_favVerses=lsGet('sc_favVerses')||[];
+// Pick today's verse based on day of year
+(function(){var d=new Date();var doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);_vi=doy%VERSES.length;renderVerse();})();
+
+function renderVerse(){
+  document.getElementById('sp-verse-text').textContent=VERSES[_vi].t;
+  document.getElementById('sp-verse-ref').textContent=VERSES[_vi].r;
+  var isFav=_favVerses.some(function(f){return f.i===_vi;});
+  var fb=document.getElementById('fav-btn');
+  fb.textContent=isFav?'♥ Saved':'♡ Favourite';
+  fb.classList.toggle('active',isFav);
+  // update candle overlay verse too
+  var cv=document.getElementById('candle-verse-text');
+  if(cv) cv.textContent=VERSES[_vi].t;
+}
+function nextVerse(){_vi=(_vi+1)%VERSES.length;renderVerse();}
+function prevVerse(){_vi=(_vi-1+VERSES.length)%VERSES.length;renderVerse();}
+function toggleFav(){
+  var isFav=_favVerses.some(function(f){return f.i===_vi;});
+  if(isFav){_favVerses=_favVerses.filter(function(f){return f.i!==_vi;});}
+  else{_favVerses.push({i:_vi,t:VERSES[_vi].t,r:VERSES[_vi].r,d:fmtDate(new Date())});}
+  lsSet('sc_favVerses',_favVerses);
+  renderVerse();
+  renderFavs();
+  showToast(isFav?'Removed from favourites':'Verse saved to favourites ♥');
+}
+function renderFavs(){
+  var sec=document.getElementById('sec-favs');
+  var list=document.getElementById('fav-list');
+  if(!_favVerses.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  list.innerHTML=_favVerses.map(function(f){
+    return '<div style="background:rgba(123,79,212,0.08);border:1px solid rgba(123,79,212,0.18);border-radius:14px;padding:10px 13px;margin-bottom:6px">'
+      +'<div style="font-family:DM Mono,monospace;font-size:8px;color:rgba(200,190,255,0.32);margin-bottom:5px">'+f.d+'</div>'
+      +'<div style="font-family:Cinzel,serif;font-size:12px;color:rgba(230,225,255,0.80);line-height:1.7;font-style:italic">'+f.t+'</div>'
+      +'<div style="font-family:DM Mono,monospace;font-size:9.5px;color:var(--sp2);margin-top:5px">'+f.r+'</div>'
+      +'</div>';
+  }).join('');
+}
+renderFavs();
+function copyVerse(){
+  var text=VERSES[_vi].t+' '+VERSES[_vi].r;
+  if(navigator.clipboard)navigator.clipboard.writeText(text);
+  showToast('Verse copied! 📋');
+}
+function shareVerse(){
+  var text=VERSES[_vi].t+'\n'+VERSES[_vi].r+'\n\n— Spirit Centre';
+  if(navigator.share){navigator.share({title:'Daily Verse',text:text}).catch(function(){});}
+  else{if(navigator.clipboard)navigator.clipboard.writeText(text);showToast('Verse copied! 📋');}
+}
+
+/* ═══ 7-DAY STREAK ═══ */
+var _streakDays=lsGet('sc_streak')||[];
+(function(){
+  var row=document.getElementById('sp-streak-row');
+  var today=new Date().getDay();
+  var emojis=['☀️','🌙','✨','🙏','🌟','🕊️','🌈'];
+  for(var i=0;i<7;i++){
+    var div=document.createElement('div');div.className='sp-streak-day';
+    var lit=_streakDays.indexOf(i)>=0;
+    div.innerHTML='<div class="sp-sd-circle'+(lit?' lit':'')+'" id="streak-'+i+'" onclick="toggleStreakDay('+i+')">'+emojis[i]+'</div>'
+      +'<div class="sp-sd-lbl">'+DAY[i].slice(0,3).toUpperCase()+'</div>';
+    row.appendChild(div);
+  }
+  updateStreakBadge();
+})();
+function toggleStreakDay(i){
+  var idx=_streakDays.indexOf(i);
+  if(idx>=0)_streakDays.splice(idx,1);else _streakDays.push(i);
+  lsSet('sc_streak',_streakDays);
+  var el=document.getElementById('streak-'+i);
+  if(el)el.classList.toggle('lit',_streakDays.indexOf(i)>=0);
+  updateStreakBadge();
+  showToast(_streakDays.indexOf(i)>=0?'Day marked! 🙏':'Day unmarked');
+}
+function updateStreakBadge(){
+  var b=document.getElementById('streak-badge');
+  if(b)b.textContent=_streakDays.length+' / 7';
+}
+
+/* ═══ PRAYER ═══ */
+function togglePrayer(el){
+  el.classList.toggle('prayed');
+  updatePrayerCount();
+  showToast(el.classList.contains('prayed')?'Prayer offered ✦':'Prayer unmarked');
+}
+function updatePrayerCount(){
+  var all=document.querySelectorAll('.sp-prayer-item');
+  var done=document.querySelectorAll('.sp-prayer-item.prayed').length;
+  var badge=document.getElementById('prayer-count');
+  if(badge)badge.textContent=done+' / '+all.length;
+}
+function openAddPrayer(){
+  document.getElementById('ap-inp').value='';
+  document.getElementById('add-prayer-modal').classList.add('open');
+  setTimeout(function(){document.getElementById('ap-inp').focus();},80);
+}
+function closeAddPrayer(e){
+  if(!e||e.target===document.getElementById('add-prayer-modal'))
+    document.getElementById('add-prayer-modal').classList.remove('open');
+}
+function saveAddPrayer(){
+  var val=document.getElementById('ap-inp').value.trim();
+  if(!val)return;
+  var list=document.getElementById('sp-prayer-list');
+  var item=document.createElement('div');
+  item.className='sp-prayer-item';
+  item.setAttribute('onclick','togglePrayer(this)');
+  item.innerHTML='<div class="sp-p-chk"></div><span class="sp-p-text">'+val+'</span>';
+  list.appendChild(item);
+  document.getElementById('add-prayer-modal').classList.remove('open');
+  updatePrayerCount();
+  showToast('Prayer intention added 🙏');
+}
+updatePrayerCount();
+
+/* ═══ DEVOTIONS ═══ */
+function toggleDev(el){
+  el.classList.toggle('done');
+  showToast(el.classList.contains('done')?el.textContent.replace('✓ ','')+' done! ✝':'Devotion unmarked');
+}
+
+/* ═══ 30-DAY READING PLAN ═══ */
+var READING_PLAN=[
+  'Genesis 1-2','Genesis 3-5','Genesis 6-9','Psalm 1','Proverbs 1-2',
+  'Matthew 1-3','Matthew 4-7','Matthew 8-10','Matthew 11-13','Matthew 14-16',
+  'John 1-3','John 4-6','John 7-9','John 10-12','John 13-15',
+  'John 15-17','John 18-21','Acts 1-4','Acts 5-8','Acts 9-12',
+  'Romans 1-4','Romans 5-8','Romans 9-12','Romans 13-16','Philippians 1-4',
+  'Colossians 1-4','1 John 1-5','Revelation 1-5','Revelation 6-12','Revelation 13-22'
+];
+var _rp=lsGet('sc_readingPlan')||{day:1,completed:[]};
+function renderReadingPlan(){
+  var day=Math.min(_rp.day||1,30);
+  var ref=document.getElementById('rp-today-ref');
+  var bar=document.getElementById('rp-bar');
+  var pct=document.getElementById('rp-pct');
+  var days=document.getElementById('rp-days');
+  if(!ref)return;
+  ref.textContent='Day '+day+' · '+(READING_PLAN[day-1]||'Complete! 🎉');
+  var pctVal=Math.round((_rp.completed.length/30)*100);
+  bar.style.width=pctVal+'%';
+  pct.textContent=pctVal+'% complete';
+  var html='';
+  for(var i=1;i<=30;i++){
+    var done=_rp.completed.indexOf(i)>=0;
+    var isToday=i===day;
+    var cls='rp-dot'+(done?' done':isToday?' today':'');
+    html+='<div class="'+cls+'" title="Day '+i+': '+(READING_PLAN[i-1]||'Done')+'" onclick="jumpRPDay('+i+')">'+(done?'✓':i)+'</div>';
+  }
+  days.innerHTML=html;
+}
+function markReadingDay(){
+  var day=_rp.day||1;
+  if(_rp.completed.indexOf(day)===-1)_rp.completed.push(day);
+  if(day<30)_rp.day=day+1;
+  lsSet('sc_readingPlan',_rp);
+  renderReadingPlan();
+  showToast('Day '+day+' read! Keep going 🙏 '+(_rp.completed.length+'/30'));
+}
+function jumpRPDay(d){_rp.day=d;lsSet('sc_readingPlan',_rp);renderReadingPlan();}
+renderReadingPlan();
+
+/* ═══ GRATITUDE JOURNAL ═══ */
+var _gratEntries=lsGet('sc_grat')||[];
+function gratCount(){
+  var ta=document.getElementById('sp-grat-ta');
+  document.getElementById('grat-count').textContent=(ta?ta.value.length:0)+' / 500';
+}
+function spGratSave(){
+  var ta=document.getElementById('sp-grat-ta');
+  if(!ta||!ta.value.trim())return;
+  var d=new Date();
+  _gratEntries.unshift({id:Date.now(),date:fmtDate(d)+' · '+fmtTime(d),text:ta.value.trim()});
+  ta.value='';gratCount();
+  lsSet('sc_grat',_gratEntries);
+  renderGratEntries();
+  showToast('Reflection saved ✦ '+fmtDate(d));
+}
+function renderGratEntries(){
+  var c=document.getElementById('sp-grat-entries');
+  if(!_gratEntries.length){
+    c.innerHTML='<div style="font-size:12px;font-style:italic;color:rgba(200,190,255,0.26);padding:6px 0">Your reflections will appear here…</div>';
+    return;
+  }
+  c.innerHTML=_gratEntries.map(function(e,i){
+    return '<div class="sp-grat-entry">'
+      +'<div class="sp-grat-entry-hdr">'
+        +'<span class="sp-grat-entry-date">'+e.date+'</span>'
+        +'<button class="sp-grat-entry-del" onclick="deleteGratEntry('+i+')" title="Delete">🗑</button>'
+      +'</div>'
+      +'<div class="sp-grat-entry-text">'+e.text+'</div>'
+      +'</div>';
+  }).join('');
+}
+function deleteGratEntry(i){
+  _gratEntries.splice(i,1);
+  lsSet('sc_grat',_gratEntries);
+  renderGratEntries();
+  showToast('Entry removed');
+}
+renderGratEntries();
+
+/* ═══ CANDLE ═══ */
+function openCandle(){
+  document.getElementById('candle-overlay').classList.add('open');
+  document.getElementById('candle-trigger').classList.add('lit');
+  document.getElementById('candle-trigger').textContent='🕯 Candle Lit';
+}
+function closeCandle(e){
+  if(!e||e.target===document.getElementById('candle-overlay'))
+    document.getElementById('candle-overlay').classList.remove('open');
+}
+
+/* ═══ EXPORT / SHARE / SAVE / PDF ═══ */
+function buildExportText(){
+  var done=document.querySelectorAll('.sp-prayer-item.prayed');
+  var prayers=[].slice.call(done).map(function(el){return el.querySelector('.sp-p-text').textContent;});
+  var devs=[].slice.call(document.querySelectorAll('.sp-dev-chip.done')).map(function(el){return el.textContent.replace('✓ ','');});
+  var grat=document.getElementById('sp-grat-ta').value.trim();
+  var txt='SPIRIT CENTRE · '+fmtDate(new Date())+'\n';
+  txt+='═'.repeat(38)+'\n\n';
+  txt+='VERSE OF THE DAY\n'+VERSES[_vi].t+'\n'+VERSES[_vi].r+'\n\n';
+  txt+='READING PLAN\nDay '+_rp.day+' · '+(READING_PLAN[(_rp.day||1)-1]||'Complete!')+'\nProgress: '+_rp.completed.length+'/30 days\n\n';
+  if(prayers.length){txt+='PRAYERS OFFERED\n'+prayers.map(function(p){return '• '+p;}).join('\n')+'\n\n';}
+  if(devs.length){txt+='DEVOTIONS DONE\n'+devs.map(function(d){return '• '+d;}).join('\n')+'\n\n';}
+  if(grat){txt+='GRATITUDE NOTE\n'+grat+'\n\n';}
+  if(_gratEntries.length){txt+='PAST REFLECTIONS\n';_gratEntries.slice(0,5).forEach(function(e){txt+=e.date+'\n'+e.text+'\n\n';});}
+  return txt;
+}
+function doShare(){
+  var text=buildExportText();
+  if(navigator.share){navigator.share({title:'Spirit Centre — '+fmtDate(new Date()),text:text}).catch(function(){});}
+  else{if(navigator.clipboard)navigator.clipboard.writeText(text);showToast('Copied to clipboard! 📋');}
+}
+function doSave(){
+  var text=buildExportText();
+  var a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(text);
+  a.download='SpiritCentre_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click();
+  showToast('Saved to file! 💾');
+}
+function doPDF(){
+  var w=window.open('','_blank','width=760,height=1050');
+  var prayers=[].slice.call(document.querySelectorAll('.sp-prayer-item.prayed')).map(function(el){return '<li>'+el.querySelector('.sp-p-text').textContent+'</li>';}).join('');
+  var devs=[].slice.call(document.querySelectorAll('.sp-dev-chip.done')).map(function(el){return '<li>'+el.textContent.replace('✓ ','')+'</li>';}).join('');
+  var entries=_gratEntries.slice(0,8).map(function(e){return '<div style="padding:10px 14px;border-radius:12px;background:rgba(123,79,212,0.06);border-left:3px solid #7B4FD4;margin-bottom:10px"><div style="font-size:10px;color:#9D7EC8;margin-bottom:4px">'+e.date+'</div><div style="font-size:13px;line-height:1.7;color:#2D2050">'+e.text+'</div></div>';}).join('');
+  var favs=_favVerses.map(function(f){return '<blockquote style="border-left:3px solid #A78BFA;margin:8px 0;padding:8px 14px;font-style:italic;color:#2D2050">'+f.t+'<footer style="font-size:10px;color:#9D7EC8;margin-top:4px">'+f.r+'</footer></blockquote>';}).join('');
+  w.document.write(`<!DOCTYPE html><html><head><title>Spirit Centre Export</title>
+<style>
+  body{font-family:Georgia,serif;margin:0;padding:30px;background:#0F0A2A;color:#E8E4FF;}
+  .page{max-width:640px;margin:0 auto;}
+  .frame{border:2px solid rgba(123,79,212,0.40);border-radius:22px;padding:26px;
+    background:linear-gradient(145deg,#1A1040,#120D30);position:relative;margin-bottom:22px;}
+  .fc{position:absolute;font-size:24px;}
+  .fc-tl{top:10px;left:12px;} .fc-tr{top:10px;right:12px;}
+  .fc-bl{bottom:10px;left:12px;} .fc-br{bottom:10px;right:12px;}
+  h1{font-family:'Palatino Linotype',serif;font-size:30px;text-align:center;
+    color:#A78BFA;margin-bottom:4px;}
+  .petal{text-align:center;font-size:16px;letter-spacing:5px;margin:10px 0;color:#7B4FD4;}
+  .date-line{text-align:center;font-size:12px;color:rgba(200,190,255,0.45);margin-bottom:18px;
+    font-family:'Courier New',monospace;}
+  h2{font-size:14px;text-transform:uppercase;letter-spacing:2px;color:#A78BFA;
+    border-bottom:1px solid rgba(123,79,212,0.25);padding-bottom:6px;margin:20px 0 12px;}
+  .verse-box{background:rgba(123,79,212,0.12);border-radius:14px;padding:16px 18px;
+    border:1px solid rgba(123,79,212,0.28);}
+  .verse-text{font-size:16px;font-style:italic;line-height:1.85;color:#E8E4FF;}
+  .verse-ref{font-family:'Courier New',monospace;font-size:11px;color:#A78BFA;margin-top:10px;}
+  ul{list-style:none;padding:0;}ul li::before{content:'✦ ';color:#A78BFA;}
+  ul li{margin-bottom:5px;font-size:13px;line-height:1.6;color:#D8D0FF;}
+  .rp-box{padding:12px 16px;background:rgba(123,79,212,0.09);border-radius:12px;
+    border:1px solid rgba(123,79,212,0.22);}
+  .footer{text-align:center;font-size:10px;color:rgba(200,190,255,0.28);margin-top:24px;
+    font-family:'Courier New',monospace;}
+  @media print{body{background:#fff;color:#1A0A40;}
+    .frame{background:#fff;border-color:rgba(123,79,212,0.25);}
+    h1,h2,.verse-ref,.petal{color:#7B4FD4;} .verse-text,.verse-box,.rp-box ul li{color:#1A0A40;}
+    .verse-box,.rp-box{background:#F8F4FF;} .frame{border:1.5px solid rgba(123,79,212,0.28);}}
+</style></head><body>
+<div class="page">
+<div class="frame">
+  <span class="fc fc-tl">✝️</span><span class="fc fc-tr">🙏</span>
+  <span class="fc fc-bl">🕊️</span><span class="fc fc-br">⭐</span>
+  <h1>Spirit Centre</h1>
+  <div class="petal">✦ ✝ ✦ 🙏 ✦ ✝ ✦ 🙏 ✦</div>
+  <div class="date-line">` + fmtDate(new Date()) + ` · Daily Report</div>
+  <h2>Verse of the Day</h2>
+  <div class="verse-box">
+    <div class="verse-text">` + VERSES[_vi].t + `</div>
+    <div class="verse-ref">` + VERSES[_vi].r + `</div>
+  </div>
+  <h2>Scripture Reading Plan</h2>
+  <div class="rp-box">
+    <p style="margin:0 0 6px;font-size:13px;color:#D8D0FF">Day ` + (_rp.day||1) + ` · ` + (READING_PLAN[(_rp.day||1)-1]||'Complete!') + `</p>
+    <p style="margin:0;font-size:11px;color:#A78BFA;font-family:'Courier New',monospace">` + _rp.completed.length + ` / 30 days complete (` + Math.round(_rp.completed.length/30*100) + `%)</p>
+  </div>
+  ` + (prayers?'<h2>Prayers Offered</h2><ul>'+prayers+'</ul>':'') + `
+  ` + (devs?'<h2>Devotions Done</h2><ul>'+devs+'</ul>':'') + `
+  ` + (entries?'<h2>Gratitude Reflections</h2>'+entries:'') + `
+  ` + (favs?'<h2>Favourite Verses</h2>'+favs:'') + `
+  <div class="petal">🙏 ✦ ✝ ✦ 🙏 ✦ ✝ ✦ 🙏</div>
+</div>
+<div class="footer">Spirit Centre · Generated ` + new Date().toDateString() + ` · Keep the faith</div>
+</div></body></html>`);
+  w.document.close();
+  setTimeout(function(){w.print();},400);
+  showToast('PDF opening… 📄');
+}
+function openExportSheet(){document.getElementById('export-sheet').classList.add('open');}
+function closeExportSheet(e){if(!e||e.target===document.getElementById('export-sheet'))document.getElementById('export-sheet').classList.remove('open');}
+
+/* ═══ COLLAPSIBLE SECTIONS ═══ */
+function toggleSec(id){
+  var el=document.getElementById(id);
+  el.classList.toggle('collapsed');
+}
+function toggleCard(id){
+  var el=document.getElementById(id);
+  el.classList.toggle('sp-card-collapsed');
+}
+
+/* ═══ AUDIO PLAYER ═══ */
+(function(){
+  var TRACKS=[
+    {src:'Josh_1_8_1John_3_1_Rom8_1.mp3', title:'Today\'s Reading — <span>Josh 1:8 · 1 John 3:1 · Rom 8:1</span>'},
+    {src:'Isaiah_41_10.mp3',               title:'Today\'s Reading — <span>Isaiah 41:10</span>'},
+    {src:'Psalm_91.mp3',                    title:'Today\'s Reading — <span>Psalm 91</span>'},
+    {src:'Psalm_124.mp3',                   title:'Today\'s Reading — <span>Psalm 124</span>'}
+  ];
+  var _cur=0;
+  var aud=document.getElementById('sp-audio');
+  var btn=document.getElementById('audio-play-btn');
+  var icon=document.getElementById('audio-play-icon');
+  var seek=document.getElementById('audio-seek');
+  var curEl=document.getElementById('audio-cur');
+  var durEl=document.getElementById('audio-dur');
+  var titleEl=document.getElementById('audio-now-title');
+  function fmt(s){var m=Math.floor(s/60);var ss=Math.floor(s%60);return m+':'+(ss<10?'0':'')+ss;}
+  function setPlaying(p){
+    icon.innerHTML=p
+      ?'<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
+      :'<polygon points="5,3 19,12 5,21"/>';
+    p?btn.classList.add('playing'):btn.classList.remove('playing');
+  }
+  function setActiveTrack(i){
+    document.querySelectorAll('.sp-audio-track').forEach(function(el,idx){
+      el.classList.toggle('active',idx===i);
+    });
+    titleEl.innerHTML=TRACKS[i].title;
+    seek.value=0; curEl.textContent='0:00'; durEl.textContent='--:--';
+  }
+  aud.addEventListener('loadedmetadata',function(){durEl.textContent=fmt(aud.duration);});
+  aud.addEventListener('timeupdate',function(){
+    if(!aud.duration)return;
+    seek.value=(aud.currentTime/aud.duration)*100;
+    curEl.textContent=fmt(aud.currentTime);
+  });
+  aud.addEventListener('ended',function(){
+    setPlaying(false);
+    var next=(_cur+1)%TRACKS.length;
+    window.audioLoad(next);
+  });
+  window.audioToggle=function(){
+    if(aud.paused){aud.play();setPlaying(true);}
+    else{aud.pause();setPlaying(false);}
+  };
+  window.audioSeek=function(v){
+    if(aud.duration)aud.currentTime=(v/100)*aud.duration;
+  };
+  window.audioLoad=function(i){
+    var wasPlaying=!aud.paused;
+    _cur=i;
+    aud.src=TRACKS[i].src;
+    aud.load();
+    setActiveTrack(i);
+    setPlaying(false);
+    if(wasPlaying){aud.play();setPlaying(true);}
+  };
+})();
+
+/* ═══ TOAST ═══ */
+var _tt=null;
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.remove('show');
+  void t.offsetWidth;
+  t.classList.add('show');
+  clearTimeout(_tt);
+  _tt=setTimeout(function(){t.classList.remove('show');},2800);
+}
+function dismissToast(){document.getElementById('toast').classList.remove('show');clearTimeout(_tt);}
+</script>
+</body>
+</html>
